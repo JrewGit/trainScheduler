@@ -1,5 +1,5 @@
 // Initialize Firebase
-var config = {
+let config = {
     apiKey: "AIzaSyDxMt4n7xBnhgwHG4sEqGARrV4wTMprgf0",
     authDomain: "jrewfirebase.firebaseapp.com",
     databaseURL: "https://jrewfirebase.firebaseio.com",
@@ -35,16 +35,27 @@ $("#submitButton").on("click", (event) => {
 
 })
 
-let date = moment().format(`hh:mm A`);
 
 database.ref("trains").on("child_added", (snapshot) => {
-    var newRow = $("<tr>").append(
+
+    let tFrequency = snapshot.val().Frequency;
+    let firstTime = `${snapshot.val().TrainStart}`;
+    let firstTimeConverted = moment(firstTime, "HH:mm").subtract(1, "years");
+    let currentTime = moment();
+    let diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+    let tRemainder = diffTime % tFrequency;
+    let tMinutesTillTrain = tFrequency - tRemainder;
+    let nextTrain = moment().add(tMinutesTillTrain, "minutes");
+
+    let newRow = $("<tr>").append(
         $("<td>").text(`${snapshot.val().Train}`),
         $("<td>").text(`${snapshot.val().Place}`),
         $("<td>").text(`${snapshot.val().Frequency}`),
-        $("<td>").text(`${date}`),
+        $("<td>").text(`${moment(nextTrain).format("hh:mm A")}`),
+        $("<td>").text(`${tMinutesTillTrain}`),
     );
 
     $("#newTable > tbody").append(newRow);
+
 })
 
