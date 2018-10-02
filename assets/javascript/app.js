@@ -38,24 +38,23 @@ $("#submitButton").on("click", (event) => {
 
 database.ref("trains").on("child_added", (snapshot) => {
 
-    let tFrequency = snapshot.val().Frequency;
-    let firstTime = `${snapshot.val().TrainStart}`;
-    let firstTimeConverted = moment(firstTime, "HH:mm").subtract(1, "years");
+    let trainFrequency = snapshot.val().Frequency;
+    let firstTrain = `${snapshot.val().TrainStart}`;
+    let firstTrainConverted = moment(firstTrain, "HH:mm").subtract(1, "years");
     let currentTime = moment();
-    let diffTime = moment().diff(moment(firstTimeConverted), "minutes");
-    let tRemainder = diffTime % tFrequency;
-    let tMinutesTillTrain = tFrequency - tRemainder;
-    let nextTrain = moment().add(tMinutesTillTrain, "minutes");
+    let timeDifference = moment().diff(moment(firstTrainConverted), "minutes");
+    let timeLeft = timeDifference % trainFrequency;
+    let timeTillNext = trainFrequency - timeLeft;
+    let nextTrain = moment().add(timeTillNext, "minutes");
 
     let newRow = $("<tr>").append(
         $("<td>").text(`${snapshot.val().Train}`),
         $("<td>").text(`${snapshot.val().Place}`),
         $("<td>").text(`${snapshot.val().Frequency}`),
         $("<td>").text(`${moment(nextTrain).format("hh:mm A")}`),
-        $("<td>").text(`${tMinutesTillTrain}`),
+        $("<td>").text(`${timeTillNext}`),
     );
 
     $("#newTable > tbody").append(newRow);
 
 })
-
